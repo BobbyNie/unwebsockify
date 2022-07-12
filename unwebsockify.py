@@ -25,6 +25,12 @@ import sys
 
 import asyncio
 import websockets
+import ssl #ignore ssl cert
+
+
+ssl_context = ssl.SSLContext()
+ssl_context.verify_mode = ssl.CERT_NONE
+ssl_context.check_hostname = False
 
 class Proxy:
     def __init__(self, port, addr, url, subproto):
@@ -50,8 +56,7 @@ class Proxy:
         print(f'{peer} connected')
         loop = asyncio.get_event_loop()
         try:
-            async with websockets.connect(
-                    self.url, subprotocols=self.subproto) as ws:
+            async with websockets.connect(self.url, subprotocols=self.subproto,ssl=ssl_context) as ws:
                 print(f'{peer} connected to {self.url}')
                 def r_reader():
                     return r.read(65536)
